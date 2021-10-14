@@ -1,175 +1,96 @@
 #include "sort.h"
 
 /**
- * unite - Combinates left and rigth arrays into the original one
- * @size:	[ int]	size of the array
- * @array:	[*int]	pointer to the head of the array
- * @left:	[*int]	pointer to left array
- * @right:	[*int]	pointer to right array
- **/
-void unite(size_t size, int *array, int *left, int *right)
+ * top_down_merge_sort - sort 2 subarray
+ * @arr: list of numbers
+ * @c_arr: copy of the list
+ * @start: start index
+ * @mid: mid index
+ * @end: end index
+ */
+void top_down_merge_sort(int *arr, int start, int mid, int end, int *c_arr)
 {
-	int i, j, k, l_lengh, r_lengh;
+	int i = 0, j = 0, k = 0;
 
-	i = j = k = 0;
-	l_lengh = size / 2;
-	r_lengh = size - l_lengh;
-
-	printf("Merging...\n");
-	printf("[left]: ");
-	print_array(left, l_lengh);
-	printf("[right]: ");
-	print_array(right, r_lengh);
-
-	while (i < l_lengh && j < r_lengh)
-		array[k++] = (left[i] < right[j]) ? left[i++] : right[j++];
-
-	while (i < l_lengh)
-		array[k++] = left[i++];
-
-	while (j < r_lengh)
-		array[k++] = right[j++];
-
-	printf("[Done]: ");
-	print_array(array, size);
+	i = start, j = mid;
+	k = start;
+	while (k < end)
+	{
+		if (i < mid && (j >= end || arr[i] <= arr[j]))
+		{
+			c_arr[k] = arr[i];
+			i++;
+		}
+		else
+		{
+			c_arr[k] = arr[j];
+			j++;
+		}
+		k++;
+	}
 }
 
 /**
- * merge_sort - sorts in ascending order using Merge Sort method.
- * @array:	[*int]	pointer to the head of the array
- * @size:	[ int]	size of the array
- **/
-void merge_sort(int *array, size_t size)
+ * top_down_merge_split - use divide an conquer to split the array
+ * @arr: arr
+ * @c_arr: copy array
+ * @start: start index
+ * @end: end index
+ * Return: nothing
+ */
+void top_down_merge_split(int *c_arr, size_t start, size_t end, int *arr)
 {
-	size_t middle, i;
-	int left[MAX], right[MAX];
+	size_t mid = 0;
 
-	if (!array || size < 2)
+	if (end - start <= 1)
 		return;
+	mid = (end + start) / 2;
 
-	for (i = 0, middle = size / 2; i < middle; i++)
-		left[i] = array[i];
-
-	for (i = middle; i < size; i++)
-		right[i - middle] = array[i];
-
-	merge_sort(left, middle);
-	merge_sort(right, size - middle);
-	unite(size, array, left, right);
-}#include "sort.h"
-
-/**
- * unite - Combinates left and rigth arrays into the original one
- * @size:	[ int]	size of the array
- * @array:	[*int]	pointer to the head of the array
- * @left:	[*int]	pointer to left array
- * @right:	[*int]	pointer to right array
- **/
-void unite(size_t size, int *array, int *left, int *right)
-{
-	int i, j, k, l_lengh, r_lengh;
-
-	i = j = k = 0;
-	l_lengh = size / 2;
-	r_lengh = size - l_lengh;
-
+	top_down_merge_split(arr, start, mid, c_arr);
+	top_down_merge_split(arr, mid, end, c_arr);
+	top_down_merge_sort(c_arr, start, mid, end, arr);
 	printf("Merging...\n");
 	printf("[left]: ");
-	print_array(left, l_lengh);
+	print_array(&(c_arr[start]), mid - start);
 	printf("[right]: ");
-	print_array(right, r_lengh);
-
-	while (i < l_lengh && j < r_lengh)
-		array[k++] = (left[i] < right[j]) ? left[i++] : right[j++];
-
-	while (i < l_lengh)
-		array[k++] = left[i++];
-
-	while (j < r_lengh)
-		array[k++] = right[j++];
-
+	print_array(&(c_arr[mid]), end - mid);
 	printf("[Done]: ");
-	print_array(array, size);
+	print_array(&(arr[start]), end - start);
 }
 
 /**
- * merge_sort - sorts in ascending order using Merge Sort method.
- * @array:	[*int]	pointer to the head of the array
- * @size:	[ int]	size of the array
- **/
-void merge_sort(int *array, size_t size)
+ * arr_cpy - copy an array
+ * @array: list of numbers
+ * @new_arr: memory to store the array
+ * @size: lenght of the array
+ * Return: nothing
+ */
+void arr_cpy(int *array, int *new_arr, size_t size)
 {
-	size_t middle, i;
-	int left[MAX], right[MAX];
+	size_t i = 0;
 
-	if (!array || size < 2)
-		return;
-
-	for (i = 0, middle = size / 2; i < middle; i++)
-		left[i] = array[i];
-
-	for (i = middle; i < size; i++)
-		right[i - middle] = array[i];
-
-	merge_sort(left, middle);
-	merge_sort(right, size - middle);
-	unite(size, array, left, right);
-}#include "sort.h"
-
-/**
- * unite - Combinates left and rigth arrays into the original one
- * @size:	[ int]	size of the array
- * @array:	[*int]	pointer to the head of the array
- * @left:	[*int]	pointer to left array
- * @right:	[*int]	pointer to right array
- **/
-void unite(size_t size, int *array, int *left, int *right)
-{
-	int i, j, k, l_lengh, r_lengh;
-
-	i = j = k = 0;
-	l_lengh = size / 2;
-	r_lengh = size - l_lengh;
-
-	printf("Merging...\n");
-	printf("[left]: ");
-	print_array(left, l_lengh);
-	printf("[right]: ");
-	print_array(right, r_lengh);
-
-	while (i < l_lengh && j < r_lengh)
-		array[k++] = (left[i] < right[j]) ? left[i++] : right[j++];
-
-	while (i < l_lengh)
-		array[k++] = left[i++];
-
-	while (j < r_lengh)
-		array[k++] = right[j++];
-
-	printf("[Done]: ");
-	print_array(array, size);
+	i = 0;
+	while (i < size)
+	{
+		new_arr[i] = array[i];
+		i++;
+	}
 }
 
 /**
- * merge_sort - sorts in ascending order using Merge Sort method.
- * @array:	[*int]	pointer to the head of the array
- * @size:	[ int]	size of the array
- **/
+ * merge_sort - Merge sort
+ * @array: Array to sort
+ * @size: Array size
+ * Return:
+ */
 void merge_sort(int *array, size_t size)
 {
-	size_t middle, i;
-	int left[MAX], right[MAX];
+	int *c_array = NULL;
 
-	if (!array || size < 2)
+	c_array = malloc(sizeof(int) * size);
+	if (c_array == NULL)
 		return;
-
-	for (i = 0, middle = size / 2; i < middle; i++)
-		left[i] = array[i];
-
-	for (i = middle; i < size; i++)
-		right[i - middle] = array[i];
-
-	merge_sort(left, middle);
-	merge_sort(right, size - middle);
-	unite(size, array, left, right);
+	arr_cpy(array, c_array, size);
+	top_down_merge_split(c_array, 0, size, array);
+	free(c_array);
 }
