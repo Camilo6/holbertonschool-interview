@@ -1,4 +1,4 @@
-0-merge_sort.c#include "sort.h"
+#include "sort.h"
 
 /**
  * unite - Combinates left and rigth arrays into the original one
