@@ -1,6 +1,4 @@
-#ifndef REGEX_H
-#define REGEX_H
-#include <stdlib.h>
-#include <stdio.h>
-int regex_match(char const *str, char const *pattern);
+#ifndef HOLBERTON_H
+#define HOLBERTON_H
+int wildcmp(char *s1, char *s2);
 #endif
