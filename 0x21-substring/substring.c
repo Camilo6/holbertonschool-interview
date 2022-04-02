@@ -1,128 +1,130 @@
 #include "substring.h"
 
 /**
- * find_substring - finds all possible substrings containing list of words
- * @s: the string to scan
- * @words: the array of words all substrings must be concatenation of
- * @nb_words: the number of elements in the array words
- * @n: pointer to which to store the number of elements in the returned array
- *
- * Return: array storing each index in s at which a substring was found
+ * not_in - return 1 if 'q' not in array 'arr'
+ * @arr: an array of ints
+ * @len: the length of arr
+ * @q: the value to check for
+ * Return: 1 if value not found, else 0
  */
-int *find_substring(char const *s, char const **words, int nb_words, int *n)
-{
-	int word = 0, i = 0, match = 0, count = 0, j = 0, k = 0, I = 0;
-	int *word_used = NULL, *indices = NULL;
-
-	*n = 0;
-	if (words == NULL)
-		return (NULL);
-	j = (nb_words * string_length(words[0]));
-	i = allocate(&word_used, nb_words, &indices, (string_length(s) / j) + 1);
-	if (i == -1)
-		return (NULL);
-	for (i = 0; s[i]; i++)
-	{
-		I = i;
-		for (reset(&word_used, nb_words), word = 0; word < nb_words && s[i]; word++)
-		{
-			match = string_compare(s, i, words[word]);
-			while (match != 0)
-			{
-				word_used[word] = 1;
-				i += match;
-				if (s[i] == '\0')
-					break;
-				for (count = 0, word = 0; word < nb_words; word++)
-				{
-					if (word_used[word] != -1)
-						count++;
-					match = string_compare(s, i, words[word]);
-					if (match != 0)
-						break;
-				}
-				if (count == nb_words)
-					indices[k++] = (i - j);
-			}
-		}
-		if (i != I || s[i] == '\0')
-			i--;
-	}
-	free(word_used);
-	*n = k;
-	return (indices);
-}
-
-/**
- * allocate - allocates memory for int arrays
- * @word_used: pointer to first memory to allocate
- * @nb_words: number of words to allocate space for
- * @indices: pointer to second memory to allocate
- * @max_index: maximum number of indices possible to allocate for
- *
- * Return: -1 if failed, 0 if successful
- */
-int allocate(int **word_used, int nb_words, int **indices, int max_index)
-{
-	*word_used = malloc(sizeof(int) * nb_words);
-	if (*word_used == NULL)
-		return (-1);
-	reset(word_used, nb_words);
-	*indices = malloc(sizeof(int) * max_index);
-	if (*indices == NULL)
-	{
-		free(word_used);
-		return (-1);
-	}
-	reset(indices, max_index);
-	return (0);
-}
-
-/**
- * string_compare - compares two strings to see if one contains the other
- * @s1: the first string to compare, the longer of the strings
- * @i: the index of the first string to start from
- * @s2: the second string to compare, the shorter of the strings
- *
- * Return: length of the shorter word contained or 0 if no match
- */
-int string_compare(char const *s1, unsigned int i, char const *s2)
-{
-	unsigned int j = 0;
-
-	for (j = 0; s1[i] && s2[j]; i++, j++)
-	{
-		if (s1[i] != s2[j])
-			return (0);
-	}
-	return (j);
-}
-
-/**
- * string_length - finds the length of a string
- * @str: the string to get length of
- *
- * Return: length of the string
- */
-int string_length(char const *str)
-{
-	unsigned int i = 0;
-
-	for (i = 0; str[i]; i++)
-		continue;
-	return (i);
-}
-
-/**
- * reset - sets all elements of array to -1
- * @array: pointer to the array to reset
- * @size: the size of the array to reset
- *
- */
-void reset(int **array, int size)
+int not_in(int *arr, int len, int q)
 {
 	int i = 0;
 
-	for (i = 0; i < size; i++)
-		(*array)[i] = -1;
+	for (i = 0; i < len; i++)
+	{
+		if (arr[i] == q)
+			return (0);
+	}
+	return (1);
+}
+
+/**
+ * str_match - match word as a substring of str
+ * @str: a string
+ * @word: an array of words
+ * Return: 1 if word is a substring of str, 0 otherwise
+ */
+int str_match(char const *str, char const *word)
+{
+	int i = 0;
+
+	for (i = 0; *(word + i) != '\0'; i++)
+	{
+		if (*(str + i) != *(word + i))
+			return (0);
+	}
+	return (1);
+}
+
+/**
+ * full_match - find if a substring match occurs at a single location
+ * @s: a string
+ * @words: an array of words
+ * @nb_words: the number of elements in parameter 'words'
+ * @word_len: the length of each word
+ * Return: 1 if a full match of a substring made of 'words' exists, 0 otherwise
+ */
+int full_match(char const *s, char const **words, int nb_words, int word_len)
+{
+	int *done;
+	int done_len = 0;
+	int found = 0;
+	int match = 1;
+	int j, k, l;
+	int aint;
+
+	done = malloc(sizeof(int) * nb_words);
+
+	for (l = 0; l < nb_words; l++)
+		done[l] = -1;
+
+	for (j = 0; j < nb_words; j++)
+	{
+		found = 0;
+		for (k = 0; k < nb_words; k++)
+		{
+			aint = not_in(done, done_len, k);
+			if (aint && str_match((s + (j * word_len)), words[k]))
+			{
+				done[done_len] = k;
+				done_len++;
+				found = 1;
+				break;
+			}
+		}
+		if (found == 0)
+		{
+			match = 0;
+			break;
+		}
+	}
+	free(done);
+	return (match);
+}
+
+/**
+ * find_substring - find in 's' substrings made up of the words in 'words'
+ * @s: a string
+ * @words: an array of words
+ * @nb_words: the number of elements in parameter 'words'
+ * @n: AUX RETURN VALUE the number of elements in the returned array
+ * Return: an array of starting indices of found substrings
+ */
+int *find_substring(char const *s, char const **words, int nb_words, int *n)
+{
+	int *result;
+	int str_len = 0;
+	int word_len = 0;
+	int i;
+
+	*n = 0;
+	if (s == NULL || words == NULL || *words == NULL || nb_words == 0)
+		return (NULL);
+
+	for (i = 0; s[i] != '\0'; i++)
+		str_len++;
+	for (i = 0; words[0][i] != '\0'; i++)
+		word_len++;
+
+	result = malloc(sizeof(int) * str_len);
+	if (result == NULL)
+		return (NULL);
+
+	for (i = 0; *(s + i) != '\0'; i++)
+	{
+		if (full_match(s + i, words, nb_words, word_len))
+		{
+			result[*n] = i;
+			*n = *n + 1;
+		}
+	}
+
+	if (*n == 0)
+	{
+		free(result);
+		return (NULL);
+	}
+
+	return (result);
 }
